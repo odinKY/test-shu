@@ -39,16 +39,14 @@ class MainWindow:
         list_frame = tk.Frame(self.root)
         list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        columns = ("id", "title", "author", "type")
+        columns = ("title", "author", "type")
         self.tree = ttk.Treeview(list_frame, columns=columns, show="tree headings", selectmode="browse")
 
-        self.tree.heading("id", text="ID")
         self.tree.heading("title", text="书名")
         self.tree.heading("author", text="作者")
         self.tree.heading("type", text="类型")
 
-        self.tree.column("id", width=50)
-        self.tree.column("title", width=300)
+        self.tree.column("title", width=350)
         self.tree.column("author", width=200)
         self.tree.column("type", width=100)
 
@@ -83,7 +81,7 @@ class MainWindow:
 
         for book in books:
             file_type = type_map.get(book.file_type, book.file_type)
-            self.tree.insert("", tk.END, values=(book.id[:8], book.title, book.author, file_type))
+            self.tree.insert("", tk.END, values=(book.title, book.author, file_type), tags=(book.id,))
 
     def on_search(self):
         keyword = self.search_entry.get().strip()
@@ -97,8 +95,9 @@ class MainWindow:
         selection = self.tree.selection()
         if selection:
             item = self.tree.item(selection[0])
-            values = item["values"]
-            self.selected_book_id = values[0]
+            tags = item.get("tags", [])
+            if tags:
+                self.selected_book_id = tags[0]
 
     def on_add_book(self):
         dialog = BookEditDialog(self.root, "添加图书")
