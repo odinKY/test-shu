@@ -158,9 +158,7 @@ class MainWindow:
             messagebox.showerror("错误", "无法读取图书内容")
             return
 
-        reader = ReaderWindow(self.root, book.title, content)
-        reader.set_title(book.title)
-        reader.show_page()
+        ReaderWindow(self.root, book.title, content)
 
     def on_import(self, file_type: str):
         if file_type == "epub":

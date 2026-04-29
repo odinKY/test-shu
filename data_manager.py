@@ -112,6 +112,9 @@ class DataManager:
                             chapters.append(text)
                 return "\n\n".join(chapters)
 
+        if book.file_type == "none":
+            return "【提示】这是一条手动录入的图书记录，\n没有关联的文本内容。\n\n如需阅读内容，请通过\"导入TXT\"或\"导入EPUB\"功能重新导入该书。"
+
         return None
 
 
