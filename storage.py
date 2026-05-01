@@ -31,7 +31,6 @@ class Book:
             "author": self.author,
             "file_path": self.file_path,
             "file_type": self.file_type,
-            "content": self.content,
             "created_at": self.created_at
         }
 

@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, messagebox, filedialog
 import sys
 import os
@@ -10,10 +10,13 @@ from file_importer import FileImporter
 from ui.dialogs import BookEditDialog, ConfirmDialog, ImportDialog
 from ui.reader_window import ReaderWindow
 
+ctk.set_appearance_mode("system")
+ctk.set_default_color_theme("blue")
+
 
 class MainWindow:
     def __init__(self):
-        self.root = tk.Tk()
+        self.root = ctk.CTk()
         self.root.title("图舒图书管理系统")
         self.root.geometry("900x600")
 
@@ -24,20 +27,20 @@ class MainWindow:
         self.refresh_book_list()
 
     def _setup_ui(self):
-        toolbar = tk.Frame(self.root)
-        toolbar.pack(fill=tk.X, padx=10, pady=10)
+        toolbar = ctk.CTkFrame(self.root)
+        toolbar.pack(fill="x", padx=10, pady=10)
 
-        tk.Label(toolbar, text="搜索:").pack(side=tk.LEFT, padx=5)
-        self.search_entry = tk.Entry(toolbar, width=30)
-        self.search_entry.pack(side=tk.LEFT, padx=5)
+        ctk.CTkLabel(toolbar, text="搜索:").pack(side="left", padx=5)
+        self.search_entry = ctk.CTkEntry(toolbar, width=250)
+        self.search_entry.pack(side="left", padx=5)
         self.search_entry.bind("<KeyRelease>", lambda e: self.on_search())
 
-        tk.Button(toolbar, text="添加", command=self.on_add_book).pack(side=tk.LEFT, padx=5)
-        tk.Button(toolbar, text="导入TXT", command=lambda: self.on_import("txt")).pack(side=tk.LEFT, padx=5)
-        tk.Button(toolbar, text="导入EPUB", command=lambda: self.on_import("epub")).pack(side=tk.LEFT, padx=5)
+        ctk.CTkButton(toolbar, text="添加", command=self.on_add_book, width=70).pack(side="left", padx=5)
+        ctk.CTkButton(toolbar, text="导入TXT", command=lambda: self.on_import("txt"), width=80).pack(side="left", padx=5)
+        ctk.CTkButton(toolbar, text="导入EPUB", command=lambda: self.on_import("epub"), width=80).pack(side="left", padx=5)
 
-        list_frame = tk.Frame(self.root)
-        list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        list_frame = ctk.CTkFrame(self.root)
+        list_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
         columns = ("title", "author", "type")
         self.tree = ttk.Treeview(list_frame, columns=columns, show="tree headings", selectmode="browse")
@@ -50,21 +53,21 @@ class MainWindow:
         self.tree.column("author", width=200)
         self.tree.column("type", width=100)
 
-        scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL, command=self.tree.yview)
+        scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscroll=scrollbar.set)
 
-        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tree.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
         self.tree.bind("<<TreeviewSelect>>", self.on_select_book)
         self.tree.bind("<Double-Button-1>", lambda e: self.on_read_book())
 
-        btn_frame = tk.Frame(self.root)
-        btn_frame.pack(fill=tk.X, padx=10, pady=10)
+        btn_frame = ctk.CTkFrame(self.root)
+        btn_frame.pack(fill="x", padx=10, pady=10)
 
-        tk.Button(btn_frame, text="修改", command=self.on_edit_book).pack(side=tk.LEFT, padx=5)
-        tk.Button(btn_frame, text="删除", command=self.on_delete_book).pack(side=tk.LEFT, padx=5)
-        tk.Button(btn_frame, text="阅读", command=self.on_read_book).pack(side=tk.LEFT, padx=5)
+        ctk.CTkButton(btn_frame, text="修改", command=self.on_edit_book, width=70).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="删除", command=self.on_delete_book, width=70).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="阅读", command=self.on_read_book, width=70).pack(side="left", padx=5)
 
     def refresh_book_list(self, books=None):
         for item in self.tree.get_children():
@@ -81,7 +84,7 @@ class MainWindow:
 
         for book in books:
             file_type = type_map.get(book.file_type, book.file_type)
-            self.tree.insert("", tk.END, values=(book.title, book.author, file_type), tags=(book.id,))
+            self.tree.insert("", "end", values=(book.title, book.author, file_type), tags=(book.id,))
 
     def on_search(self):
         keyword = self.search_entry.get().strip()
@@ -153,12 +156,7 @@ class MainWindow:
             messagebox.showerror("错误", "未找到该图书")
             return
 
-        content = self.data_manager.get_book_content(book.id)
-        if not content:
-            messagebox.showerror("错误", "无法读取图书内容")
-            return
-
-        ReaderWindow(self.root, book.title, content)
+        ReaderWindow(self.root, book.title, book.id, book.file_type, self.data_manager)
 
     def on_import(self, file_type: str):
         if file_type == "epub":
@@ -199,13 +197,7 @@ class MainWindow:
 
             if result:
                 final_title, final_author = result
-                book = self.data_manager.add_book(final_title, final_author)
-                book.file_path = file_path
-                book.file_type = file_type
-                book.content = content
-                from storage import Storage
-                storage = Storage()
-                storage.save()
+                self.data_manager.add_book(final_title, final_author, file_path, file_type)
                 self.refresh_book_list()
                 messagebox.showinfo("成功", f"{file_type.upper()}文件导入成功!")
         except ImportError as e:

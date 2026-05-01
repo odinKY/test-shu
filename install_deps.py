@@ -5,7 +5,7 @@ import os
 
 def install_dependencies():
     print("=" * 50)
-    print("图舒图书管理系统 - 依赖安装工具")
+    print("LZ的图书管理系统 - 依赖安装工具")
     print("=" * 50)
 
     packages = ["ebooklib", "beautifulsoup4", "lxml"]

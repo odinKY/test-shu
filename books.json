@@ -1,11 +1,26 @@
 [
   {
-    "id": "2df3a122-3d8c-48a0-ab70-5d637ad114cd",
-    "title": "1.初始化本地仓库",
+    "id": "14765d1a-7e92-4794-8d3e-a63f099239b1",
+    "title": "龙族",
+    "author": "江南",
+    "file_path": "E:/1liulanqi/dianzishu/龙族 (江南) (Z-Library).epub",
+    "file_type": "epub",
+    "created_at": "2026-04-29T10:52:43.498499"
+  },
+  {
+    "id": "ed6c8f1b-1039-412c-9ed2-97b3c5712b1a",
+    "title": "1.配置 Git",
     "author": "lz",
     "file_path": "",
     "file_type": "none",
-    "content": "",
-    "created_at": "2026-04-29T10:05:21.586487"
+    "created_at": "2026-04-29T10:53:13.275871"
+  },
+  {
+    "id": "fcc60b08-d1ca-47df-8904-304bc04271c0",
+    "title": "风姿物语",
+    "author": "罗森",
+    "file_path": "E:/1liulanqi/dianzishu/风姿物语 (罗森 [罗森]) (Z-Library).epub",
+    "file_type": "epub",
+    "created_at": "2026-05-01T13:34:50.113858"
   }
 ]

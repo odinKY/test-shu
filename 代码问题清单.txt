@@ -1,0 +1,36 @@
+图舒图书管理系统 — 代码问题清单
+===================================
+
+1. main_window.py:206-208 — Storage 实例不一致
+--------------------------------------------------
+导入文件时，先通过 data_manager.add_book() 添加图书到 storage 实例 A，
+然后用 book.file_path = ... / book.content = ... 直接修改 Book 对象属性，
+最后又 new 了一个新的 Storage() 实例 B 来 save()。
+
+虽然 A 和 B 操作的是同一个 books.json 文件，但两者内存中的 books 列表
+不会同步。下次 data_manager 操作时，内存数据已滞后于文件内容，可能导致
+数据不一致。
+
+建议：通过 DataManager 增加一个 update_book 方法，避免直接操作 Storage。
+
+
+2. storage.py — 全量写入 JSON 性能问题
+----------------------------------------
+每次增删改都会全量序列化整个 books 列表写入 books.json。
+当前 books.json 已达 6.4MB，随着图书增多，每次保存的 I/O 开销会持续增长。
+
+建议：考虑增量写入，或将 content 文本内容与元数据分离存储。
+
+
+3. content 字段直接存入 JSON 导致文件膨胀
+-----------------------------------------------
+import_txt_book() 和 import_epub_book() 将书籍正文全文存入 JSON 的 content
+字段。对于多本大部头书籍，books.json 会迅速膨胀到几十甚至上百 MB，
+影响启动加载速度。
+
+建议：content 按需从原始文件读取，JSON 中仅保留元数据（id/title/author/file_path/file_type/created_at）。
+
+
+4. data_manager.py:121 — 孤立的 import 语句
+----------------------------------------------
+文件末尾有一行独立的 "import os"，无实际作用，属于遗漏代码。
